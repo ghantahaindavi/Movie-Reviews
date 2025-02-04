@@ -10,7 +10,16 @@ word_index = imdb.get_word_index()
 reverse_word_index = {value: key for key, value in word_index.items()}
 
 # Load the pre-trained model with ReLU activation
-model = load_model('simple_rnn_imdb.h5')
+from tensorflow.keras.layers import SimpleRNN
+
+# Custom SimpleRNN to ignore 'time_major'
+class CustomSimpleRNN(SimpleRNN):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('time_major', None)  # Remove if present
+        super().__init__(*args, **kwargs)
+
+# Load the model
+model = load_model('simple_rnn_imdb.h5', custom_objects={'SimpleRNN': CustomSimpleRNN})
 
 # Step 2: Helper Functions
 # Function to decode reviews
